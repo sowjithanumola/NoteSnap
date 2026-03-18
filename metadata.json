@@ -1,0 +1,5 @@
+{
+  "name": "NoteSnap",
+  "description": "A modern responsive web application that helps students convert long notes into simple study material using AI.",
+  "requestFramePermissions": []
+}
