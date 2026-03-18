@@ -116,7 +116,8 @@ export default function App() {
     setIsChatLoading(true);
 
     try {
-      const response = await chatWithGemini(chatMessages, userMsg);
+      const validMessages = chatMessages.filter(msg => msg.parts[0].text !== "Sorry, I encountered an error. Please try again.");
+      const response = await chatWithGemini(validMessages, userMsg, notes);
       setChatMessages(prev => [...prev, { role: 'model', parts: [{ text: response }] }]);
     } catch (error) {
       console.error("Chat error:", error);

@@ -34,7 +34,7 @@ export async function generateKeyConcepts(notes: string): Promise<string> {
   return response.text || "";
 }
 
-export async function chatWithGemini(messages: { role: 'user' | 'model', parts: { text: string }[] }[], newMessage: string): Promise<string> {
+export async function chatWithGemini(messages: { role: 'user' | 'model', parts: { text: string }[] }[], newMessage: string, notes: string = ""): Promise<string> {
   const contents = messages.map(msg => ({
     role: msg.role,
     parts: msg.parts
@@ -45,11 +45,15 @@ export async function chatWithGemini(messages: { role: 'user' | 'model', parts: 
     parts: [{ text: newMessage }]
   });
 
+  const systemInstruction = notes.trim() 
+    ? `You are a helpful AI tutor assisting a student with their studies. Answer their questions clearly and concisely. Here are the student's current notes for context:\n\n${notes}`
+    : "You are a helpful AI tutor assisting a student with their studies. Answer their questions clearly and concisely.";
+
   const response = await ai.models.generateContent({
-    model: "gemini-3.1-pro-preview",
+    model: "gemini-3-flash-preview",
     contents: contents as any,
     config: {
-      systemInstruction: "You are a helpful AI tutor assisting a student with their studies. Answer their questions clearly and concisely.",
+      systemInstruction: systemInstruction,
     }
   });
 
