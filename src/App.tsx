@@ -14,7 +14,8 @@ import {
   Send,
   Loader2,
   Sparkles,
-  Mail
+  Mail,
+  Upload
 } from 'lucide-react';
 import Markdown from 'react-markdown';
 import { 
@@ -45,6 +46,22 @@ export default function App() {
   const [chatInput, setChatInput] = useState('');
   const [isChatLoading, setIsChatLoading] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const content = event.target?.result as string;
+      setNotes(prev => prev ? prev + '\n\n' + content : content);
+    };
+    reader.readAsText(file);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
 
   useEffect(() => {
     if (isDarkMode) {
@@ -151,9 +168,29 @@ export default function App() {
           
           {/* Left Column: Input */}
           <div className="flex flex-col h-[calc(100vh-8rem)] min-h-[500px]">
-            <label htmlFor="notes" className="block text-sm font-medium mb-3 opacity-80 pl-1">
-              Paste your study notes here
-            </label>
+            <div className="flex items-center justify-between mb-3 pl-1">
+              <label htmlFor="notes" className="block text-sm font-medium opacity-80">
+                Paste your study notes here
+              </label>
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
+                  isDarkMode 
+                    ? 'bg-zinc-800 hover:bg-zinc-700 text-zinc-300' 
+                    : 'bg-white hover:bg-zinc-50 text-zinc-600 border border-zinc-200 shadow-sm'
+                }`}
+              >
+                <Upload className="w-3.5 h-3.5" />
+                Upload File
+              </button>
+              <input 
+                type="file" 
+                ref={fileInputRef} 
+                onChange={handleFileUpload} 
+                accept=".txt,.md,.csv,.json"
+                className="hidden" 
+              />
+            </div>
             <textarea
               id="notes"
               value={notes}
