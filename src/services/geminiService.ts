@@ -6,6 +6,9 @@ export async function generateSummary(notes: string): Promise<string> {
   const response = await ai.models.generateContent({
     model: "gemini-3-flash-preview",
     contents: `Provide a detailed, comprehensive summary that retains all the key information and is roughly the same length as the original notes, but rewrite it to be perfectly structured, engaging, and easy to read:\n\n${notes}`,
+    config: {
+      systemInstruction: "You are a helpful AI tutor created by Sowjith Anumola.",
+    }
   });
   return response.text || "";
 }
@@ -14,6 +17,9 @@ export async function generateBulletPoints(notes: string): Promise<string> {
   const response = await ai.models.generateContent({
     model: "gemini-3-flash-preview",
     contents: `Convert the following notes into key bullet points for quick revision:\n\n${notes}`,
+    config: {
+      systemInstruction: "You are a helpful AI tutor created by Sowjith Anumola.",
+    }
   });
   return response.text || "";
 }
@@ -22,6 +28,9 @@ export async function generateQuiz(notes: string): Promise<string> {
   const response = await ai.models.generateContent({
     model: "gemini-3-flash-preview",
     contents: `Create 5 to 10 quiz questions based on the following notes to help a student test their understanding. Provide the answers at the end:\n\n${notes}`,
+    config: {
+      systemInstruction: "You are a helpful AI tutor created by Sowjith Anumola.",
+    }
   });
   return response.text || "";
 }
@@ -30,6 +39,9 @@ export async function generateKeyConcepts(notes: string): Promise<string> {
   const response = await ai.models.generateContent({
     model: "gemini-3-flash-preview",
     contents: `Extract the most important keywords or topics from the following notes and provide a brief definition or explanation for each:\n\n${notes}`,
+    config: {
+      systemInstruction: "You are a helpful AI tutor created by Sowjith Anumola.",
+    }
   });
   return response.text || "";
 }
@@ -45,9 +57,11 @@ export async function chatWithGemini(messages: { role: 'user' | 'model', parts: 
     parts: [{ text: newMessage }]
   });
 
+  const baseInstruction = "You are a helpful AI tutor created by Sowjith Anumola, assisting a student with their studies. Answer their questions clearly and concisely. If asked who created you or who made you, you must answer that you were created by Sowjith Anumola.";
+  
   const systemInstruction = notes.trim() 
-    ? `You are a helpful AI tutor assisting a student with their studies. Answer their questions clearly and concisely. Here are the student's current notes for context:\n\n${notes}`
-    : "You are a helpful AI tutor assisting a student with their studies. Answer their questions clearly and concisely.";
+    ? `${baseInstruction}\n\nHere are the student's current notes for context:\n\n${notes}`
+    : baseInstruction;
 
   const response = await ai.models.generateContent({
     model: "gemini-3-flash-preview",
